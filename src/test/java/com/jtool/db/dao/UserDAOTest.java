@@ -139,12 +139,12 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectFilterByStartAndLimitOrderBy() {
-		Map<String, Object> user2 = genUserMap(2, "KKL", 18); 
+		User user2 = genUserPojo(2, "KKL", 18);
 		
-		List<Map<String, Object>> userFromDB = userDAO.select().where("age < ?", 20).limit(0, 1).orderBy("id desc").execAsRows();
-		
-		Assert.assertEquals(1, userFromDB.size());
-		Assert.assertTrue(userFromDB.contains(user2));
+		List<User> userFromDB = userDAO.select().where("age > ?", 16).orderByDesc("id").orderByAsc("age").execAsList();
+
+		Assert.assertEquals(2, userFromDB.size());
+		Assert.assertEquals(userFromDB.get(1), user2);
 	}
 	
 	@Test
@@ -161,7 +161,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	public void testSelectByStartAndLimitOrderBy() {
 		Map<String, Object> user = genUserMap(3, "Ken", 28); 
 		
-		List<Map<String, Object>> userFromDB = userDAO.select().limit(0, 1).orderBy("id desc").execAsRows();
+		List<Map<String, Object>> userFromDB = userDAO.select().limit(0, 1).orderByDesc("id").execAsRows();
 		
 		Assert.assertEquals(1, userFromDB.size());
 		Assert.assertTrue(userFromDB.contains(user));
@@ -169,7 +169,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectFilterByStartAndLimitOrderByWithNoData() {
-		List<Map<String, Object>> userFromDB = userDAO.select().where("age > ?", 100).limit(0, 100).orderBy("age desc").execAsRows();
+		List<Map<String, Object>> userFromDB = userDAO.select().where("age > ?", 100).limit(0, 100).orderByDesc("age").execAsRows();
 		Assert.assertEquals(0, userFromDB.size());
 	}
 	
@@ -177,7 +177,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	public void testSelectFilterByStartAndLimitOrderByAsList() {
 		User user = genUserPojo(2, "KKL", 18); 
 		
-		List<User> userFromDB = userDAO.select().where("age < ?", 20).orderBy("id desc").limit(0, 1).execAsList();
+		List<User> userFromDB = userDAO.select().where("age < ?", 20).orderByDesc("id").limit(0, 1).execAsList();
 		
 		Assert.assertEquals(1, userFromDB.size());
 		Assert.assertTrue(userFromDB.contains(user));
@@ -185,7 +185,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectFilterByStartAndLimitOrderByAsListWithNoData() {
-		List<User> userFromDB = userDAO.select().where("age < ?", 0).orderBy("id desc").limit(0, 1).execAsList();
+		List<User> userFromDB = userDAO.select().where("age < ?", 0).orderByDesc("id").limit(0, 1).execAsList();
 		Assert.assertEquals(0, userFromDB.size());
 	}
 	

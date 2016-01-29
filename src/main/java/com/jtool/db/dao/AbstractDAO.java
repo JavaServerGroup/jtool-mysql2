@@ -88,8 +88,21 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 			return this;
 		}
 
-		public Select orderBy(String orderBy) {
-			this.orderByStr = orderBy;
+		public Select orderByAsc(String orderBy) {
+			if(this.orderByStr == null) {
+				this.orderByStr = orderBy;
+			} else {
+				this.orderByStr += ", " + orderBy;
+			}
+			return this;
+		}
+
+		public Select orderByDesc(String orderBy) {
+			if(this.orderByStr == null) {
+				this.orderByStr = orderBy + " desc";
+			} else {
+				this.orderByStr += ", " + orderBy + " desc";
+			}
 			return this;
 		}
 
