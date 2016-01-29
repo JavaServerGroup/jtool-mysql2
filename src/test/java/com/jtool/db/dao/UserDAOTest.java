@@ -284,6 +284,28 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		Assert.assertTrue(userDAO.select().where("name = ?", "Ken").hasRecord());
 		Assert.assertFalse(userDAO.select().where("name = ?", "nobody").hasRecord());
 	}
+
+	@Test
+	public void testSelectByStartAndLimitOrderByOrderBy() {
+		Map<String, Object> user = genUserMap(3, "Ken", 28);
+
+		List<Map<String, Object>> userFromDB = userDAO.select().limit(0, 1).orderByDesc("id").orderByDesc("age").execAsRows();
+
+		Assert.assertEquals(1, userFromDB.size());
+		Assert.assertTrue(userFromDB.contains(user));
+	}
+
+	@Test
+	public void testSelectByStartAndLimitOrderByOrderByAcs() {
+		Map<String, Object> user = genUserMap(1, "jialechan", 8);
+
+		List<Map<String, Object>> userFromDB = userDAO.select().limit(0, 1).orderByAsc("id").orderByAsc("age").execAsRows();
+
+		System.out.println(userFromDB);
+
+		Assert.assertEquals(1, userFromDB.size());
+		Assert.assertTrue(userFromDB.contains(user));
+	}
 	
 	private User genUserPojo(int id, String name, int age) {
 		User user = new User();
