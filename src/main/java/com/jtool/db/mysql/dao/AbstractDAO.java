@@ -1,6 +1,6 @@
-package com.jtool.db.dao;
+package com.jtool.db.mysql.dao;
 
-import com.jtool.db.annotation.Table;
+import com.jtool.db.mysql.annotation.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -21,7 +21,7 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	JdbcTemplate jdbcTemplate;
+	protected JdbcTemplate jdbcTemplate;
 	private SimpleJdbcInsert simpleJdbcInsert;
 
 	private DataSource dataSource;
@@ -56,7 +56,7 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 
 	private void initDataSource() {
 		Class<?> clazz = this.getClass();
-		String dataSourceString = clazz.getAnnotation(com.jtool.db.annotation.DataSource.class).value();
+		String dataSourceString = clazz.getAnnotation(com.jtool.db.mysql.annotation.DataSource.class).value();
 		dataSource = context.getBean(dataSourceString, DataSource.class);
 	}
 
@@ -64,8 +64,7 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		return tableName;
 	}
 
-	@SuppressWarnings("unchecked")
-	class Select {
+	public class Select {
 
 		private final List<Object> args = new ArrayList<>();
 
@@ -107,36 +106,39 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		}
 
 		public Select limit(int start, int len) {
+//			if(len == 0) {
+//				return this;
+//			}
 			this.start = start;
 			this.len = len;
 			return this;
 		}
 
-		<T> List<T> execAsList() {
+		public <T> List<T> execAsList() {
 			return execAsList(makeSQL());
 		}
 
-		<T> List<T> execAsList(String sql) {
+		public <T> List<T> execAsList(String sql) {
 			return AbstractDAO.this.execSelectSqlAsList(sql, args.toArray());
 		}
 
-		List<Map<String, Object>> execAsRows() {
+		public List<Map<String, Object>> execAsRows() {
 			return execAsRows(makeSQL());
 		}
 
-		List<Map<String, Object>> execAsRows(String sql) {
+		public List<Map<String, Object>> execAsRows(String sql) {
 			return AbstractDAO.this.execSelectSqlRows(sql, args.toArray());
 		}
 
-		<T> Optional<T> execAsPojoOpt() {
+		public <T> Optional<T> execAsPojoOpt() {
 			return execAsPojoOpt(makeSQL());
 		}
 
-		<T> Optional<T> execAsPojoOpt(String sql) {
+		public <T> Optional<T> execAsPojoOpt(String sql) {
 			return AbstractDAO.this.execSelectSqlAsPojoOpt(sql, args.toArray());
 		}
 
-		int count() {
+		public int count() {
 			this.fields = "count(1)";
 			String sql = makeSQL();
 			Object[] params = args.toArray();
@@ -146,11 +148,11 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 			return result;
 		}
 
-		boolean hasOnlyOneRecord() {
+		public boolean hasOnlyOneRecord() {
 			return 1  == this.count();
 		}
 
-		boolean hasRecord() {
+		public boolean hasRecord() {
 			this.fields = "1";
 			List<Map<String, Object>> rows = AbstractDAO.this.execSelectSqlRows(makeSQL(), args.toArray());
 			boolean result = rows != null && rows.size() > 0;
@@ -158,7 +160,7 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 			return result;
 		}
 
-		int delete() {
+		public int delete() {
 			this.action = "delete";
 			this.fields = "";
 			return AbstractDAO.this.execUpdate(makeSQL(), args.toArray());
@@ -187,7 +189,7 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		return new Select(fields);
 	}
 
-	<T> Optional<T> selectByPrimaryKey(Object id) {
+	public <T> Optional<T> selectByPrimaryKey(Object id) {
 		try {
 			String selectByIdSQL = "select * from " + tableName + " where " + primaryKeyName + " = ?";
 			logger.debug("准备根据ID查找：" + selectByIdSQL + "\t" + id.toString());
@@ -201,7 +203,7 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		}
 	}
 
-	int deleteByPrimaryKey(Object id) {
+	public int deleteByPrimaryKey(Object id) {
 		String sql = "delete from " + tableName + " where " + primaryKeyName + " = ?";
 		logger.debug("准备根据ID删除记录：" + sql + "\t" + id);
 		int i = jdbcTemplate.update(sql, id);
@@ -209,23 +211,30 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		return i;
 	}
 
-	<T> T add(Object object) {
+	public long addAndReturnKey(Object object) {
 		SqlParameterSource sps = new BeanPropertySqlParameterSource(object);
 		logger.debug("准备插入对象：" + object);
 		@SuppressWarnings("unchecked")
-		T id = (T)simpleJdbcInsert.executeAndReturnKeyHolder(sps).getKeys().get(primaryKeyName);
+		long id = simpleJdbcInsert.executeAndReturnKey(sps).longValue();
 		logger.debug("插入成功:" + object + "\t" + "primary key为:" + id);
 		return id;
 	}
 
-	List<Map<String, Object>> execSelectSqlRows(String sql, Object... args) {
+	public void add(Object object) {
+		SqlParameterSource sps = new BeanPropertySqlParameterSource(object);
+		logger.debug("准备插入对象：" + object);
+		simpleJdbcInsert.execute(sps);
+		logger.debug("插入成功:" + object);
+	}
+
+	public List<Map<String, Object>> execSelectSqlRows(String sql, Object... args) {
 		logger.debug("准备查找数据：" + sql + "\t" + Arrays.toString(args));
 		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql, args);
 		logger.debug("查找到符合条件记录条数：" + result.size());
 		return result;
 	}
 
-	<T> Optional<T> execSelectSqlAsPojoOpt(String sql, Object... args) {
+	public <T> Optional<T> execSelectSqlAsPojoOpt(String sql, Object... args) {
 		try {
 			@SuppressWarnings("unchecked")
 			T t = (T) jdbcTemplate.queryForObject(sql, makeRowMapperInstance(), args);
@@ -237,7 +246,7 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		}
 	}
 
-	<T> List<T> execSelectSqlAsList(String sql, Object... args) {
+	public <T> List<T> execSelectSqlAsList(String sql, Object... args) {
 		logger.debug("准备查找数据：" + sql + "\t" + Arrays.toString(args));
 		@SuppressWarnings("unchecked")
 		List<T> result = (List<T>) jdbcTemplate.query(sql, makeRowMapperInstance(), args);
@@ -245,7 +254,7 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		return result;
 	}
 
-	int execUpdate(String sql, Object... args) {
+	public int execUpdate(String sql, Object... args) {
 		logger.debug("执行修改操作：" + sql + "\t" + Arrays.toString(args));
 		int result = jdbcTemplate.update(sql, args);
 		logger.debug("执行修改操作条数：" + result);

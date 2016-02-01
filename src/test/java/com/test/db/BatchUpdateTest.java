@@ -1,4 +1,4 @@
-package com.jtool.db.dao;
+package com.test.db;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,11 +18,11 @@ public class BatchUpdateTest extends AbstractTransactionalJUnit4SpringContextTes
 	@Test
 	public void testBatchUpdate() {
 		long begin = System.currentTimeMillis();
-		List<User> users = new ArrayList<>();
+		List<Users> userses = new ArrayList<>();
 		for (int i = 0; i < 10000; i++) {
-			users.add(genUserPojo(0, i + "", i));
+			userses.add(genUserPojo(0, i + "", i));
 		}
-		userDAO.batchUpdate(users);
+		userDAO.batchUpdate(userses);
 		long end = System.currentTimeMillis();
 		System.out.println(end - begin);
 		
@@ -30,12 +30,12 @@ public class BatchUpdateTest extends AbstractTransactionalJUnit4SpringContextTes
 	}
 
 
-	private User genUserPojo(int id, String name, int age) {
-		User user = new User();
-		user.setAge(age);
-		user.setName(name);
-		user.setId(id);
-		return user;
+	private Users genUserPojo(int id, String name, int age) {
+		Users users = new Users();
+		users.setAge(age);
+		users.setName(name);
+		users.setId(id);
+		return users;
 	}
 
 }

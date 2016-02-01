@@ -1,4 +1,4 @@
-package com.jtool.db.annotation;
+package com.jtool.db.mysql.annotation;
 
 import java.lang.annotation.*;
 

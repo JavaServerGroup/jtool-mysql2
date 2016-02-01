@@ -1,7 +1,0 @@
-CREATE TABLE user (
-  id INTEGER IDENTITY,
-  name VARCHAR(45) NOT NULL,
-  age INTEGER NOT NULL
-) ;
-
-     

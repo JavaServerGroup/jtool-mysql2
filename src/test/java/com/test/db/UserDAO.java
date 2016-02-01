@@ -1,7 +1,8 @@
-package com.jtool.db.dao;
+package com.test.db;
 
-import com.jtool.db.annotation.DataSource;
-import com.jtool.db.annotation.Table;
+import com.jtool.db.mysql.annotation.DataSource;
+import com.jtool.db.mysql.annotation.Table;
+import com.jtool.db.mysql.dao.AbstractDAO;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -11,14 +12,14 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
-@Table(tableName = "user", primaryKeyName = "id")
+@Table(tableName = "users", primaryKeyName = "id")
 @DataSource("dataSource")
 public class UserDAO extends AbstractDAO {
 
 	@Override
 	protected RowMapper<?> makeRowMapperInstance() {
 		return (rs, rowNum) -> {
-            User o = new User();
+            Users o = new Users();
             o.setId(rs.getInt("id"));
             o.setName(rs.getString("name"));
             o.setAge(rs.getInt("age"));
@@ -27,16 +28,16 @@ public class UserDAO extends AbstractDAO {
         };
 	}
 
-	public int[] batchUpdate(final List<User> users) {
+	public int[] batchUpdate(final List<Users> userses) {
 		String sql = "insert into " + getTableName() + " (name, age) values(?, ?);";
 		return jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
 			public void setValues(PreparedStatement ps, int i) throws SQLException {
-				ps.setString(1, users.get(i).getName());
-				ps.setInt(2, users.get(i).getAge());
+				ps.setString(1, userses.get(i).getName());
+				ps.setInt(2, userses.get(i).getAge());
 			}
 
 			public int getBatchSize() {
-				return users.size();
+				return userses.size();
 			}
 		});
 	}
