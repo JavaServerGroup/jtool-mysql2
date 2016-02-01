@@ -65,7 +65,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	}
 	
 	@Test
-	public void testAdd() {
+	public void addAndReturnKey() {
 		Users users = new Users();
 		users.setAge(1);
 		users.setName("Tim");
@@ -79,6 +79,15 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		Assert.assertTrue(userFromDb.isPresent());
 		
 		Assert.assertEquals(users, userFromDb.get());
+	}
+
+	@Test
+	public void testAdd() {
+		Users users = new Users();
+		users.setAge(1);
+		users.setName("Tim");
+		userDAO.add(users);
+		Assert.assertEquals(4, userDAO.select().count());
 	}
 	
 	@Test
