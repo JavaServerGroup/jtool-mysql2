@@ -1,0 +1,7 @@
+CREATE TABLE users (
+  id INTEGER IDENTITY,
+  name VARCHAR(45) NOT NULL,
+  age INTEGER NOT NULL
+) ;
+
+     
