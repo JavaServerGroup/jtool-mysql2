@@ -1,72 +1,62 @@
 # jtool-mysql2  [![Build Status](https://travis-ci.org/JavaServerGroup/jtool-mysql2.svg?branch=master)](https://travis-ci.org/JavaServerGroup/jtool-mysql2)[![Coverage Status](https://coveralls.io/repos/github/JavaServerGroup/jtool-mysql2/badge.svg?branch=master)](https://coveralls.io/github/JavaServerGroup/jtool-mysql2?branch=master) 
 
-<a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/%E4%BD%BF%E7%94%A8maven%E5%BC%95%E5%85%A5jtool-mysql2">使用maven引入jtool mysql2</a>   
-<a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/Quick-start">Quick start</a>
-
-## 批量添加
-修改DAO
+##Quick start:
+###第一步：引入repository
+```xml
+<repositories>
+	<repository>
+		<id>jtool-mvn-repository</id>
+		<url>https://raw.github.com/JavaServerGroup/jtool-mvn-repository/master/releases</url>
+	</repository>
+</repositories>
+```
+###第二步：添加dependency
+```xml
+<dependency>
+	<groupId>com.jtool</groupId>
+	<artifactId>jtool-mysql2</artifactId>
+	<version>0.0.2</version>
+</dependency>
+```
+###第三步：dataSource配置（和平时spring jdbc一样）
+```xml
+<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${jdbc.driverClassName}"/>
+    <property name="url" value="${jdbc.url}"/>
+    <property name="username" value="${jdbc.username}"/>
+    <property name="password" value="${jdbc.password}"/>
+</bean>
+```
+###第四步：准备数据库表
+```sql
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `age` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) 
+```
+###第五步：编写users表的DAO
 ```java
 @Repository
 @Table(tableName = "users")
 @DataSource("dataSource")
 public class UserDAO extends AbstractDAO {
-
-	@Override
-	protected RowMapper<?> makeRowMapperInstance() {
-		return (rs, rowNum) -> {
-	            Users o = new Users();
-	            o.setId(rs.getInt("id"));
-	            o.setName(rs.getString("name"));
-	            o.setAge(rs.getInt("age"));
+    @Override
+    protected RowMapper<?> makeRowMapperInstance() {
+        return (rs, rowNum) -> {
+	        Users o = new Users();
+	        o.setId(rs.getInt("id"));
+	        o.setName(rs.getString("name"));
+	        o.setAge(rs.getInt("age"));
 	
-	            return o;
-	        };
-	}
-
-	public int[] batchUpdate(final List<Users> userses) {
-		String sql = "insert into " + getTableName() + " (name, age) values(?, ?);";
-		return jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-			public void setValues(PreparedStatement ps, int i) throws SQLException {
-				ps.setString(1, userses.get(i).getName());
-				ps.setInt(2, userses.get(i).getAge());
-			}
-
-			public int getBatchSize() {
-				return userses.size();
-			}
-		});
-	}
-
+	        return o;
+        };
+    }
 }
 ```
-使用
+注：以上的makeRowMapperInstance是jdk8的写法，jdk8以前的写法请参考这里。
+###第六步：直接使用AbstractDAO提供的方法
 ```java
-public class BatchUpdateTest extends AbstractTransactionalJUnit4SpringContextTests {
 
-	@Resource
-	private UserDAO userDAO;
-
-	@Test
-	public void testBatchUpdate() {
-		long begin = System.currentTimeMillis();
-		List<Users> userses = new ArrayList<>();
-		for (int i = 0; i < 10000; i++) {
-			userses.add(genUserPojo(0, i + "", i));
-		}
-		userDAO.batchUpdate(userses);
-		long end = System.currentTimeMillis();
-		System.out.println(end - begin);
-		
-		Assert.assertEquals(10003, userDAO.select().count());
-	}
-
-	private Users genUserPojo(int id, String name, int age) {
-		Users users = new Users();
-		users.setAge(age);
-		users.setName(name);
-		users.setId(id);
-		return users;
-	}
-
-}
 ```
