@@ -70,3 +70,12 @@ public class MainApp {
 	}
 }
 ```
+##接下来可以做什么？
+* <a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/%E4%BA%86%E8%A7%A3select%E7%9A%84%E7%94%A8%E6%B3%95">了解select的用法</a>
+* 了解where的用法
+* 了解limit的用法
+* 了解orderby的用法
+* 了解count的用法
+* 了解delete的用法
+* 了解update的用法
+* 批量添加的用法
