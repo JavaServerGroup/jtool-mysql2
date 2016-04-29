@@ -1,6 +1,7 @@
 # jtool-mysql2  [![Build Status](https://travis-ci.org/JavaServerGroup/jtool-mysql2.svg?branch=master)](https://travis-ci.org/JavaServerGroup/jtool-mysql2)[![Coverage Status](https://coveralls.io/repos/github/JavaServerGroup/jtool-mysql2/badge.svg?branch=master)](https://coveralls.io/github/JavaServerGroup/jtool-mysql2?branch=master) 
 
-##第一步：引入repository
+##引入只需两个步骤：
+###第一步:引入repository
 ```xml
 <repositories>
 	<repository>
@@ -9,7 +10,7 @@
 	</repository>
 </repositories>
 ```
-##第二步添加dependency
+###第二步:添加dependency
 ```xml
 <dependency>
 	<groupId>com.jtool</groupId>
@@ -17,6 +18,7 @@
 	<version>0.0.2</version>
 </dependency>
 ```
+以上两部引入成功，具体使用参考下面例子程序
 ## 例子数据库表结构
 ```sql
 CREATE TABLE `users` (
