@@ -58,5 +58,15 @@ public class UserDAO extends AbstractDAO {
 注：以上的makeRowMapperInstance是jdk8的写法，jdk8以前的写法请参考这里。
 ###第六步：直接使用AbstractDAO提供的方法
 ```java
-
+public class MainApp {
+	public static void main(String[] args) {
+		ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"application-context.xml"}); 
+		UserDAO userDAO = (UserDAO)context.getBean("userDAO");
+		
+		Users users = new Users();
+		users.setAge(1);
+		users.setName("Tim");
+		userDAO.add(users);//直接添加
+	}
+}
 ```
