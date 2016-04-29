@@ -1,4 +1,22 @@
 # jtool-mysql2  [![Build Status](https://travis-ci.org/JavaServerGroup/jtool-mysql2.svg?branch=master)](https://travis-ci.org/JavaServerGroup/jtool-mysql2)[![Coverage Status](https://coveralls.io/repos/github/JavaServerGroup/jtool-mysql2/badge.svg?branch=master)](https://coveralls.io/github/JavaServerGroup/jtool-mysql2?branch=master) 
+
+##第一步：引入repository
+```xml
+<repositories>
+	<repository>
+		<id>jtool-mvn-repository</id>
+		<url>https://raw.github.com/JavaServerGroup/jtool-mvn-repository/master/releases</url>
+	</repository>
+</repositories>
+```
+##第二步添加dependency
+```xml
+<dependency>
+	<groupId>com.jtool</groupId>
+	<artifactId>jtool-mysql2</artifactId>
+	<version>0.0.2</version>
+</dependency>
+```
 ## 例子数据库表结构
 ```sql
 CREATE TABLE `users` (
@@ -10,17 +28,20 @@ CREATE TABLE `users` (
 ```
 ## 例子users表的DAO
 ```java
+@Repository
+@Table(tableName = "users")
+@DataSource("dataSource")
 public class UserDAO extends AbstractDAO {
 	@Override
 	protected RowMapper<?> makeRowMapperInstance() {
-		return (rs, rowNum) -> {
-            Users o = new Users();
-            o.setId(rs.getInt("id"));
-            o.setName(rs.getString("name"));
-            o.setAge(rs.getInt("age"));
-
-            return o;
-        };
+		return (rs, rowNum) -> {//JDK1.8的写法
+	            Users o = new Users();
+	            o.setId(rs.getInt("id"));
+	            o.setName(rs.getString("name"));
+	            o.setAge(rs.getInt("age"));
+	
+	            return o;
+	        };
 	}
 }
 ```
@@ -39,7 +60,6 @@ Users users = new Users();
 users.setAge(1);
 users.setName("Tim");
 userDAO.add(users);//直接添加
-long id = userDAO.addAndReturnKey(users);//返回生成的id
 ```
 ### SELECT的使用
 ```java
@@ -127,20 +147,20 @@ int updated = userDAO.execUpdate(sql, "KKL2", 1);
 修改DAO
 ```java
 @Repository
-@Table(tableName = "users", primaryKeyName = "id")
+@Table(tableName = "users")
 @DataSource("dataSource")
 public class UserDAO extends AbstractDAO {
 
 	@Override
 	protected RowMapper<?> makeRowMapperInstance() {
 		return (rs, rowNum) -> {
-            Users o = new Users();
-            o.setId(rs.getInt("id"));
-            o.setName(rs.getString("name"));
-            o.setAge(rs.getInt("age"));
-
-            return o;
-        };
+	            Users o = new Users();
+	            o.setId(rs.getInt("id"));
+	            o.setName(rs.getString("name"));
+	            o.setAge(rs.getInt("age"));
+	
+	            return o;
+	        };
 	}
 
 	public int[] batchUpdate(final List<Users> userses) {
