@@ -7,5 +7,5 @@ import java.lang.annotation.*;
 @Inherited
 public @interface Table {
 	String tableName();
-	String primaryKeyName();
+	String primaryKeyName() default "";
 }

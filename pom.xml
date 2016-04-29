@@ -113,6 +113,33 @@
 
 	</dependencies>
 
+	<repositories>
+		<repository>
+			<id>springsource-repo</id>
+			<name>SpringSource Repository</name>
+			<url>http://repo.springsource.org/release</url>
+		</repository>
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>http://repo.spring.io/libs-snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jtool-mvn-repository</id>
+			<url>https://raw.github.com/JavaServerGroup/jtool-mvn-repository/master/releases</url>
+		</repository>
+		<repository>
+			<id>jtool-mvn-snapshots</id>
+			<url>https://raw.github.com/JavaServerGroup/jtool-mvn-snapshots/master/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<distributionManagement>
 		<repository>
 			<id>jtool-maven-repository</id>

@@ -3,5 +3,8 @@ CREATE TABLE users (
   name VARCHAR(45) NOT NULL,
   age INTEGER NOT NULL
 ) ;
-
+CREATE TABLE people (
+  id INTEGER IDENTITY,
+  name VARCHAR(45) NOT NULL
+) ;
      

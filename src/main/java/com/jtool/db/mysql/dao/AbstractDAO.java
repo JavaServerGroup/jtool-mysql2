@@ -108,9 +108,9 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		}
 
 		public Select limit(int start, int len) {
-//			if(len == 0) {
-//				return this;
-//			}
+			if(len <= 0){
+				throw new IllegalArgumentException("limit的长度应该大于0");
+			}
 			this.start = start;
 			this.len = len;
 			return this;
@@ -192,6 +192,9 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 	}
 
 	public <T> Optional<T> selectByPrimaryKey(Object id) {
+		if(primaryKeyName == null || "".equals(primaryKeyName)) {
+			throw new IllegalStateException("需要使用selectByPrimaryKey方法,必须在dao的@Table注解设置primaryKeyName的值");
+		}
 		try {
 			String selectByIdSQL = "select * from " + tableName + " where " + primaryKeyName + " = ?";
 			log.debug(buildLog("准备根据ID查找：" + selectByIdSQL + "\t" + id.toString()));
@@ -206,6 +209,9 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 	}
 
 	public int deleteByPrimaryKey(Object id) {
+		if(primaryKeyName == null || "".equals(primaryKeyName)) {
+			throw new IllegalStateException("需要使用deleteByPrimaryKey方法,必须在dao的@Table注解设置primaryKeyName的值");
+		}
 		String sql = "delete from " + tableName + " where " + primaryKeyName + " = ?";
 		log.debug(buildLog("准备根据ID删除记录：" + sql + "\t" + id));
 		int i = jdbcTemplate.update(sql, id);
@@ -213,7 +219,10 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		return i;
 	}
 
-	public long addAndReturnKey(Object object) {
+	public long addAndReturnPrimaryKey(Object object) {
+		if(primaryKeyName == null || "".equals(primaryKeyName)) {
+			throw new IllegalStateException("需要使用addAndReturnPrimaryKey方法,必须在dao的@Table注解设置primaryKeyName的值");
+		}
 		SqlParameterSource sps = new BeanPropertySqlParameterSource(object);
 		log.debug(buildLog("准备插入对象：" + object));
 		@SuppressWarnings("unchecked")

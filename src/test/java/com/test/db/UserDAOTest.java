@@ -70,7 +70,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		users.setAge(1);
 		users.setName("Tim");
 
-		long id = userDAO.addAndReturnKey(users);
+		long id = userDAO.addAndReturnPrimaryKey(users);
 		
 		users.setId(id);
 		
@@ -314,6 +314,16 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 		Assert.assertEquals(1, userFromDB.size());
 		Assert.assertTrue(userFromDB.contains(user));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testLimit0() {
+		userDAO.select().limit(0, 0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testLimitSmall1() {
+		userDAO.select().limit(0, -1);
 	}
 
 	private Users genUserPojo(int id, String name, int age) {
