@@ -1,7 +1,7 @@
 # jtool-mysql2  [![Build Status](https://travis-ci.org/JavaServerGroup/jtool-mysql2.svg?branch=master)](https://travis-ci.org/JavaServerGroup/jtool-mysql2)[![Coverage Status](https://coveralls.io/repos/github/JavaServerGroup/jtool-mysql2/badge.svg?branch=master)](https://coveralls.io/github/JavaServerGroup/jtool-mysql2?branch=master) 
 
 ##Quick start:
-###第一步：引入repository
+###第一步：引入repository到pom.xml
 ```xml
 <repositories>
 	<repository>
@@ -10,7 +10,7 @@
 	</repository>
 </repositories>
 ```
-###第二步：添加dependency
+###第二步：添加dependency到pom.xml
 ```xml
 <dependency>
 	<groupId>com.jtool</groupId>
@@ -70,3 +70,12 @@ public class MainApp {
 	}
 }
 ```
+##接下来可以做什么？
+* <a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/%E4%BA%86%E8%A7%A3select%E7%9A%84%E7%94%A8%E6%B3%95" target="_blank">了解select的用法</a>
+* 了解where的用法
+* 了解limit的用法
+* 了解orderby的用法
+* 了解count的用法
+* 了解delete的用法
+* 了解update的用法
+* 批量添加的用法
