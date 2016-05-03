@@ -1,5 +1,9 @@
-# jtool-mysql2  [![Build Status](https://travis-ci.org/JavaServerGroup/jtool-mysql2.svg?branch=master)](https://travis-ci.org/JavaServerGroup/jtool-mysql2)[![Coverage Status](https://coveralls.io/repos/github/JavaServerGroup/jtool-mysql2/badge.svg?branch=master)](https://coveralls.io/github/JavaServerGroup/jtool-mysql2?branch=master) 
-
+# jtool-mysql2  
+[![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
+[![Build Status](https://travis-ci.org/JavaServerGroup/jtool-mysql2.svg?branch=master)](https://travis-ci.org/JavaServerGroup/jtool-mysql2)
+[![Coverage Status](https://coveralls.io/repos/github/JavaServerGroup/jtool-mysql2/badge.svg?branch=master)](https://coveralls.io/github/JavaServerGroup/jtool-mysql2?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ff8f22ab678248e2a7c12b26dd8fd8c3)](https://www.codacy.com/app/jiale-chan/jtool-mysql2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=JavaServerGroup/jtool-mysql2&amp;utm_campaign=Badge_Grade)   
+   
 ##Quick start:
 ###第一步：引入repository到pom.xml
 ```xml
