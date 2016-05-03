@@ -15,7 +15,7 @@
 <dependency>
 	<groupId>com.jtool</groupId>
 	<artifactId>jtool-mysql2</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 </dependency>
 ```
 ###第三步：dataSource配置（和平时spring jdbc一样）
