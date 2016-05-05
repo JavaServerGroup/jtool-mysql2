@@ -76,10 +76,10 @@ public class MainApp {
 ```
 ##接下来可以做什么？
 * <a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/%E4%BA%86%E8%A7%A3select%E7%9A%84%E7%94%A8%E6%B3%95" target="_blank">了解select的用法</a>
-* 了解where的用法
-* 了解limit的用法
-* 了解orderby的用法
-* 了解count的用法
-* 了解delete的用法
-* 了解update的用法
-* 批量添加的用法
+* <a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/%E4%BA%86%E8%A7%A3where%E7%9A%84%E7%94%A8%E6%B3%95" target="_blank">了解where的用法</a>
+* <a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/%E4%BA%86%E8%A7%A3limit%E7%9A%84%E7%94%A8%E6%B3%95" target="_blank">了解limit的用法</a>
+* <a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/ORDERBY%E7%9A%84%E4%BD%BF%E7%94%A8" target="_blank">了解orderby的用法</a>
+* <a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/COUNT%E7%9A%84%E7%94%A8%E6%B3%95" target="_blank">了解count的用法</a>
+* <a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/DELETE%E7%9A%84%E7%94%A8%E6%B3%95" target="_blank">了解delete的用法</a>
+* <a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/UPDATE%E7%9A%84%E7%94%A8%E6%B3%95" target="_blank">了解update的用法</a>
+* <a href="https://github.com/JavaServerGroup/jtool-mysql2/wiki/%E6%89%B9%E9%87%8F%E6%B7%BB%E5%8A%A0%E7%9A%84%E7%94%A8%E6%B3%95" target="_blank">批量添加的用法</a>
