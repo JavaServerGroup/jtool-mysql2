@@ -127,7 +127,7 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		}
 
 		public List<Map<String, Object>> execAsRows(String sql) {
-			return AbstractDAO.this.execSelectSqlRows(sql, args.toArray());
+			return AbstractDAO.this.execSelectSqlAsRows(sql, args.toArray());
 		}
 
 		public <T> Optional<T> execAsPojoOpt() {
@@ -154,7 +154,7 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 
 		public boolean hasRecord() {
 			this.fields = "1";
-			List<Map<String, Object>> rows = AbstractDAO.this.execSelectSqlRows(makeSQL(), args.toArray());
+			List<Map<String, Object>> rows = AbstractDAO.this.execSelectSqlAsRows(makeSQL(), args.toArray());
 			boolean result = rows != null && rows.size() > 0;
 			log.debug("是否有纪录：" + result);
 			return result;
@@ -236,7 +236,7 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		log.debug("插入成功:" + object);
 	}
 
-	public List<Map<String, Object>> execSelectSqlRows(String sql, Object... args) {
+	public List<Map<String, Object>> execSelectSqlAsRows(String sql, Object... args) {
 		log.debug("准备查找数据：" + sql + "\t" + Arrays.toString(args));
 		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql, args);
 		log.debug("查找到符合条件记录条数：" + result.size());
@@ -269,4 +269,5 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		log.debug("执行修改操作条数：" + result);
 		return result;
 	}
+
 }

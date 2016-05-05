@@ -204,7 +204,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		
 		String sql = "select * from " + userDAO.getTableName() + " where name = ?";
 		
-		List<Map<String, Object>> userFromDB = userDAO.execSelectSqlRows(sql, "KKL");
+		List<Map<String, Object>> userFromDB = userDAO.execSelectSqlAsRows(sql, "KKL");
 		
 		Assert.assertEquals(1, userFromDB.size());
 		Assert.assertTrue(userFromDB.contains(user2));
@@ -213,7 +213,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testExecSelectSqlNotExit() {
 		String sql = "select * from " + userDAO.getTableName() + " where name = ?";
-		List<Map<String, Object>> userFromDB = userDAO.execSelectSqlRows(sql, "KKL2");
+		List<Map<String, Object>> userFromDB = userDAO.execSelectSqlAsRows(sql, "KKL2");
 		Assert.assertEquals(0, userFromDB.size());
 	}
 	

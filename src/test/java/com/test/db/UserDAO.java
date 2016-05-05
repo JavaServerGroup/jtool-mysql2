@@ -28,16 +28,16 @@ public class UserDAO extends AbstractDAO {
         };
 	}
 
-	public int[] batchUpdate(final List<Users> userses) {
+	public int[] batchUpdate(final List<Users> usersList) {
 		String sql = "insert into " + getTableName() + " (name, age) values(?, ?);";
 		return jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
 			public void setValues(PreparedStatement ps, int i) throws SQLException {
-				ps.setString(1, userses.get(i).getName());
-				ps.setInt(2, userses.get(i).getAge());
+				ps.setString(1, usersList.get(i).getName());
+				ps.setInt(2, usersList.get(i).getAge());
 			}
 
 			public int getBatchSize() {
-				return userses.size();
+				return usersList.size();
 			}
 		});
 	}
