@@ -81,7 +81,6 @@ public abstract class AbstractDAO implements ApplicationContextAware {
 		}
 
 		public Select where(String where, Object... args) {
-			System.out.println(args.getClass());
 			this.whereStr = where;
 			Collections.addAll(this.args, args);
 			return this;

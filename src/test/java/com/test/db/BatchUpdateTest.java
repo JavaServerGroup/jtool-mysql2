@@ -29,7 +29,6 @@ public class BatchUpdateTest extends AbstractTransactionalJUnit4SpringContextTes
 		Assert.assertEquals(10003, userDAO.select().count());
 	}
 
-
 	private Users genUserPojo(int id, String name, int age) {
 		Users users = new Users();
 		users.setAge(age);
