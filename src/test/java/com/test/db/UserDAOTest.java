@@ -1,20 +1,76 @@
 package com.test.db;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
+import java.sql.SQLException;
 import java.util.*;
 
 @ContextConfiguration(locations = "/testDB-config.xml")
 public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
-	
+
+	@Before
+	public void before() {
+		userDAO.add(new Users(){{
+			setName("jialechan");
+			setAge(8);
+		}});
+		userDAO.add(new Users(){{
+			setName("KKL");
+			setAge(18);
+		}});
+		userDAO.add(new Users(){{
+			setName("Ken");
+			setAge(28);
+		}});
+	}
+
 	@Resource
 	private UserDAO userDAO;
-	
+
+	@Test
+	public void myTest() throws SQLException {
+		userDAO.myTest();
+	}
+
+	@Test
+	public void testIfWhere() {
+
+		Users users = genUserPojo(1, "jialechan", 8);
+
+		Optional<Users> userFromDB = userDAO.select().ifWhere(users.getName() != null, "name = ?", () -> "jialechan").execAsPojoOpt();
+
+		Assert.assertTrue(userFromDB.isPresent());
+		Assert.assertEquals(users, userFromDB.get());
+	}
+
+	@Test
+	public void testIfWhere2() {
+		Users users = genUserPojo(1, "jialechan", 8);
+
+		Optional<Users> userFromDB = userDAO.select().where("name = ?", "jialechan").ifWhere(users.getAge() != 0, "age = ?", () -> 8).execAsPojoOpt();
+
+		Assert.assertTrue(userFromDB.isPresent());
+		Assert.assertEquals(users, userFromDB.get());
+	}
+
+	@Test
+	public void testIfWhere3() {
+
+		Users users = genUserPojo(1, null, 8);
+
+		List<Users> usersList = userDAO.select().ifWhere(users.getName() != null, "name = ?", () -> users.getName().toLowerCase()).execAsList();
+
+		Assert.assertEquals(3, usersList.size());
+	}
+
+
 	@Test
 	public void testSelectAll() {
 		List<Users> userses = new ArrayList<>();
@@ -29,7 +85,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 	@Test
 	public void testSelectAllByFields() {
-		List<Users> userses = new ArrayList<>();
+		List<Users> userses = new ArrayList<Users>();
 		userses.add(genUserPojo(1, "jialechan", 8));
 		userses.add(genUserPojo(2, "KKL", 18));
 		userses.add(genUserPojo(3, "Ken", 28));
@@ -49,17 +105,6 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	}
 
 	@Test
-	public void testSelectById() {
-		
-		Users users = genUserPojo(1, "jialechan", 8);
-		
-		Optional<Users> userFromDB = userDAO.selectByPrimaryKey(1);
-		
-		Assert.assertTrue(userFromDB.isPresent());
-		Assert.assertEquals(users, userFromDB.get());
-	}
-	
-	@Test
 	public void testCountTotal() {
 		Assert.assertEquals(3, userDAO.select().count());
 	}
@@ -74,7 +119,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		
 		users.setId(id);
 		
-		Optional<Users> userFromDb = userDAO.selectByPrimaryKey(id);
+		Optional<Users> userFromDb = userDAO.selectByPrimaryKeyOpt(id);
 		
 		Assert.assertTrue(userFromDb.isPresent());
 		
@@ -102,8 +147,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectFilterByWithNoData() {
-		Optional<Users> userFromDB = userDAO.select().where("name = ?", "nobody").execAsPojoOpt();
-		Assert.assertFalse(userFromDB.isPresent());
+		Assert.assertFalse(userDAO.select().where("name = ?", "nobody").execAsPojoOpt().isPresent());
 	}
 	
 	@Test(expected=IncorrectResultSizeDataAccessException.class)
@@ -113,7 +157,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectFilterByAsList() {
-		List<Users> userses = new ArrayList<>();
+		List<Users> userses = new ArrayList<Users>();
 		userses.add(genUserPojo(1, "jialechan", 8));
 		userses.add(genUserPojo(2, "KKL", 18));
 		
@@ -129,18 +173,6 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	}
 	
 	@Test
-	public void testSelectFilterByAsRows() {
-		Map<String, Object> user1 = genUserMap(1, "jialechan", 8);
-		Map<String, Object> user2 = genUserMap(2, "KKL", 18); 
-		
-		List<Map<String, Object>> userFromDB = userDAO.select().where("age < ?", 20).execAsRows();
-		
-		Assert.assertEquals(2, userFromDB.size());
-		Assert.assertTrue(userFromDB.contains(user1));
-		Assert.assertTrue(userFromDB.contains(user2));
-	}
-	
-	@Test
 	public void testSelectFilterByAsRowsWithNoData() {
 		List<Map<String, Object>> userFromDB = userDAO.select().where("age < ?", 0).execAsRows();
 		Assert.assertEquals(0, userFromDB.size());
@@ -148,32 +180,31 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectFilterByStartAndLimitOrderBy() {
-		Users users2 = genUserPojo(2, "KKL", 18);
-		
 		List<Users> usersFromDB = userDAO.select().where("age > ?", 16).orderByDesc("id").orderByAsc("age").execAsList();
 
 		Assert.assertEquals(2, usersFromDB.size());
-		Assert.assertEquals(usersFromDB.get(1), users2);
+		Assert.assertEquals("KKL", usersFromDB.get(1).getName());
+		Assert.assertEquals(18, usersFromDB.get(1).getAge());
 	}
 	
 	@Test
 	public void testSelectByStartAndLimit() {
-		Map<String, Object> user = genUserMap(1, "jialechan", 8); 
+		Map<String, Object> user = genUserMap("jialechan", 8);
 		
 		List<Map<String, Object>> userFromDB = userDAO.select().limit(0, 1).execAsRows();
-		
+
 		Assert.assertEquals(1, userFromDB.size());
-		Assert.assertTrue(userFromDB.contains(user));
+		Assert.assertEquals("jialechan", userFromDB.get(0).get("name"));
+		Assert.assertEquals(8, userFromDB.get(0).get("age"));
 	}
 	
 	@Test
 	public void testSelectByStartAndLimitOrderBy() {
-		Map<String, Object> user = genUserMap(3, "Ken", 28); 
-		
 		List<Map<String, Object>> userFromDB = userDAO.select().limit(0, 1).orderByDesc("id").execAsRows();
 		
 		Assert.assertEquals(1, userFromDB.size());
-		Assert.assertTrue(userFromDB.contains(user));
+		Assert.assertEquals("Ken", userFromDB.get(0).get("name"));
+		Assert.assertEquals(28, userFromDB.get(0).get("age"));
 	}
 	
 	@Test
@@ -200,14 +231,13 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testExecSelectSql() {
-		Map<String, Object> user2 = genUserMap(2, "KKL", 18); 
-		
 		String sql = "select * from " + userDAO.getTableName() + " where name = ?";
 		
 		List<Map<String, Object>> userFromDB = userDAO.execSelectSqlAsRows(sql, "KKL");
 		
 		Assert.assertEquals(1, userFromDB.size());
-		Assert.assertTrue(userFromDB.contains(user2));
+		Assert.assertEquals("KKL", userFromDB.get(0).get("name"));
+		Assert.assertEquals(18, userFromDB.get(0).get("age"));
 	}
 	
 	@Test
@@ -219,17 +249,21 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testExecUpdate() {
-		Users users = genUserPojo(1, "jialechan", 8);
+		Users user = new Users();
+		user.setName("Jacket");
+		user.setAge(25);
+
+		user.setId(userDAO.addAndReturnPrimaryKey(user));
 		
 		String sql = "update " + userDAO.getTableName() + " set name = ? where id = ?";
 		
-		int updated = userDAO.execUpdate(sql, "KKL2", 1);
+		int updated = userDAO.execUpdate(sql, "KKL2", user.getId());
 		
 		Assert.assertEquals(1, updated);
+
+		user.setName("KKL2");
 		
-		users.setName("KKL2");
-		
-		Assert.assertEquals(users, userDAO.selectByPrimaryKey(1).get());
+		Assert.assertEquals(user, userDAO.selectByPrimaryKeyOpt(user.getId()).get());
 	}
 	
 	@Test
@@ -253,7 +287,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testExecSqlAsObjectList() {
-		List<Users> userses = new ArrayList<>();
+		List<Users> userses = new ArrayList<Users>();
 		userses.add(genUserPojo(1, "jialechan", 8));
 		userses.add(genUserPojo(2, "KKL", 18));
 		
@@ -266,10 +300,15 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testDeleteById() {
-		int deleted = userDAO.deleteByPrimaryKey(1);
+		Users users = new Users(){{
+			setName("iamjiale");
+			setAge(100);
+		}};
+		users.setId(userDAO.addAndReturnPrimaryKey(users));
+		int deleted = userDAO.deleteByPrimaryKey(users.getId());
 		Assert.assertEquals(1, deleted);
 		
-		Optional<Users> shouldBeEmpty = userDAO.selectByPrimaryKey(1);
+		Optional<Users> shouldBeEmpty = userDAO.selectByPrimaryKeyOpt(userDAO.selectByPrimaryKeyOpt(users.getId()));
 		Assert.assertFalse(shouldBeEmpty.isPresent());
 	}
 	
@@ -296,24 +335,20 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 	@Test
 	public void testSelectByStartAndLimitOrderByOrderBy() {
-		Map<String, Object> user = genUserMap(3, "Ken", 28);
-
 		List<Map<String, Object>> userFromDB = userDAO.select().limit(0, 1).orderByDesc("id").orderByDesc("age").execAsRows();
 
 		Assert.assertEquals(1, userFromDB.size());
-		Assert.assertTrue(userFromDB.contains(user));
+		Assert.assertEquals("Ken", userFromDB.get(0).get("name"));
+		Assert.assertEquals(28, userFromDB.get(0).get("age"));
 	}
 
 	@Test
 	public void testSelectByStartAndLimitOrderByOrderByAcs() {
-		Map<String, Object> user = genUserMap(1, "jialechan", 8);
-
 		List<Map<String, Object>> userFromDB = userDAO.select().limit(0, 1).orderByAsc("id").orderByAsc("age").execAsRows();
 
-		System.out.println(userFromDB);
-
 		Assert.assertEquals(1, userFromDB.size());
-		Assert.assertTrue(userFromDB.contains(user));
+		Assert.assertEquals("jialechan", userFromDB.get(0).get("name"));
+		Assert.assertEquals(8, userFromDB.get(0).get("age"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -334,10 +369,9 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		return users;
 	}
 	
-	private Map<String, Object> genUserMap(int id, String name, int age) {
+	private Map<String, Object> genUserMap(String name, int age) {
 		Map<String, Object> result = new HashMap<>();
 		result.put("age", age);
-		result.put("id", id);
 		result.put("name", name);
 		
 		return result;

@@ -37,16 +37,13 @@ class Users {
 
 		Users users = (Users) o;
 
-		if (id != users.id) return false;
 		if (age != users.age) return false;
-		return !(name != null ? !name.equals(users.name) : users.name != null);
-
+		return name != null ? name.equals(users.name) : users.name == null;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = (int) (id ^ (id >>> 32));
-		result = 31 * result + (name != null ? name.hashCode() : 0);
+		int result = name != null ? name.hashCode() : 0;
 		result = 31 * result + age;
 		return result;
 	}

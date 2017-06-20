@@ -24,9 +24,8 @@ public class BatchUpdateTest extends AbstractTransactionalJUnit4SpringContextTes
 		}
 		userDAO.batchUpdate(users);
 		long end = System.currentTimeMillis();
-		System.out.println(end - begin);
-		
-		Assert.assertEquals(10003, userDAO.select().count());
+
+		Assert.assertEquals(10000, userDAO.select().count());
 	}
 
 	private Users genUserPojo(int id, String name, int age) {

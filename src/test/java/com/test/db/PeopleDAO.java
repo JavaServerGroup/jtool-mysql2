@@ -15,8 +15,8 @@ import java.sql.SQLException;
 public class PeopleDAO extends AbstractDAO {
 
 	@Override
-	protected RowMapper<?> makeRowMapperInstance() {
-		return new RowMapper() {
+	protected RowMapper<People> makeRowMapperInstance() {
+		return new RowMapper<People>() {
 			@Override
 			public People mapRow(ResultSet rs, int i) throws SQLException {
 				People o = new People();
