@@ -2,7 +2,6 @@ package com.test.db;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -85,7 +84,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 	@Test
 	public void testSelectAllByFields() {
-		List<Users> userses = new ArrayList<Users>();
+		List<Users> userses = new ArrayList<>();
 		userses.add(genUserPojo(1, "jialechan", 8));
 		userses.add(genUserPojo(2, "KKL", 18));
 		userses.add(genUserPojo(3, "Ken", 28));
@@ -157,7 +156,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectFilterByAsList() {
-		List<Users> userses = new ArrayList<Users>();
+		List<Users> userses = new ArrayList<>();
 		userses.add(genUserPojo(1, "jialechan", 8));
 		userses.add(genUserPojo(2, "KKL", 18));
 		
@@ -189,8 +188,6 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectByStartAndLimit() {
-		Map<String, Object> user = genUserMap("jialechan", 8);
-		
 		List<Map<String, Object>> userFromDB = userDAO.select().limit(0, 1).execAsRows();
 
 		Assert.assertEquals(1, userFromDB.size());
@@ -287,7 +284,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testExecSqlAsObjectList() {
-		List<Users> userses = new ArrayList<Users>();
+		List<Users> userses = new ArrayList<>();
 		userses.add(genUserPojo(1, "jialechan", 8));
 		userses.add(genUserPojo(2, "KKL", 18));
 		

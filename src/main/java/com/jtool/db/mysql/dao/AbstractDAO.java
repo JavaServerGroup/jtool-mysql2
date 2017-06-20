@@ -14,7 +14,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public abstract class AbstractDAO implements ApplicationContextAware {
 

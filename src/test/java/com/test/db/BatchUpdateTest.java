@@ -17,13 +17,11 @@ public class BatchUpdateTest extends AbstractTransactionalJUnit4SpringContextTes
 
 	@Test
 	public void testBatchUpdate() {
-		long begin = System.currentTimeMillis();
 		List<Users> users = new ArrayList<>();
 		for (int i = 0; i < 10000; i++) {
 			users.add(genUserPojo(0, i + "", i));
 		}
 		userDAO.batchUpdate(users);
-		long end = System.currentTimeMillis();
 
 		Assert.assertEquals(10000, userDAO.select().count());
 	}

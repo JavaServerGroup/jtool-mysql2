@@ -2,12 +2,9 @@ package com.jtool.db.mysql.dao;
 
 import java.util.*;
 
-/**
- * Created by jialechan on 2017/6/15.
- */
 public class Select {
 
-    private final List<Object> args = new ArrayList<Object>();
+    private final List<Object> args = new ArrayList<>();
 
     private AbstractDAO abstractDAO;
 
