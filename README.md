@@ -58,7 +58,7 @@ public class Users {
 public class UserDAO extends AbstractDAO<Users> {
 }
 ```
-注：AbstractDAO<Users>这里的<Users>是必须的。
+注意AbstractDAO&lt;Users&gt;，这里的&lt;Users&gt;是必须的。
 
 ### 第六步：直接使用AbstractDAO提供的方法
 ```java
