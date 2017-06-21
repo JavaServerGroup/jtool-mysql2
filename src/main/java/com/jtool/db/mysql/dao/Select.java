@@ -69,27 +69,27 @@ public class Select {
         return this;
     }
 
-    public <T> List<T> execAsList() {
+    public List execAsList() {
         return execAsList(makeSQL());
     }
 
-    public <T> List<T> execAsList(String sql) {
+    public List execAsList(String sql) {
         return abstractDAO.execSelectSqlAsList(sql, args.toArray());
     }
 
-    public List<Map<String, Object>> execAsRows() {
+    public List execAsRows() {
         return execAsRows(makeSQL());
     }
 
-    public List<Map<String, Object>> execAsRows(String sql) {
+    public List execAsRows(String sql) {
         return abstractDAO.execSelectSqlAsRows(sql, args.toArray());
     }
 
-    public <T> Optional<T> execAsPojoOpt() {
+    public Optional execAsPojoOpt() {
         return execAsPojoOpt(makeSQL());
     }
 
-    public <T> Optional<T> execAsPojoOpt(String sql) {
+    public Optional execAsPojoOpt(String sql) {
         return abstractDAO.execSelectSqlAsPojoOpt(sql, args.toArray());
     }
 

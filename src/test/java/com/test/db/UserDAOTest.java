@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -32,11 +33,6 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 	@Resource
 	private UserDAO userDAO;
-
-	@Test
-	public void myTest() throws SQLException {
-		userDAO.myTest();
-	}
 
 	@Test
 	public void testIfWhere() {
@@ -259,8 +255,10 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		Assert.assertEquals(1, updated);
 
 		user.setName("KKL2");
-		
-		Assert.assertEquals(user, userDAO.selectByPrimaryKeyOpt(user.getId()).get());
+
+		Optional<Users> userFromDB = userDAO.selectByPrimaryKeyOpt(user.getId());
+		Assert.assertTrue(userFromDB.isPresent());
+		Assert.assertEquals(user, userFromDB.get());
 	}
 	
 	@Test
@@ -278,7 +276,8 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		String sql = "select * from " + userDAO.getTableName() + " where name = ?";
 		
 		Optional<Users> userFromDB = userDAO.execSelectSqlAsPojoOpt(sql, "jialechan");
-		
+
+		Assert.assertTrue(userFromDB.isPresent());
 		Assert.assertEquals(users, userFromDB.get());
 	}
 	
@@ -366,13 +365,4 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		return users;
 	}
 	
-	private Map<String, Object> genUserMap(String name, int age) {
-		Map<String, Object> result = new HashMap<>();
-		result.put("age", age);
-		result.put("name", name);
-		
-		return result;
-	}
-
-
 }

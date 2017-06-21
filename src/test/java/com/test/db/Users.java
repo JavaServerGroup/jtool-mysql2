@@ -1,6 +1,6 @@
 package com.test.db;
 
-class Users {
+public class Users {
 	private long id;
 	private String name;
 	private int age;
