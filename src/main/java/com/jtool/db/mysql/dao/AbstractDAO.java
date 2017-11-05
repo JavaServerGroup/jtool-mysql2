@@ -87,7 +87,7 @@ public abstract class AbstractDAO<T> implements ApplicationContextAware {
                 final Field field = dbPojoClass.getDeclaredField(columnName);
 
                 if (field == null) {
-                    throw new IllegalStateException();
+                    throw new IllegalStateException("pojo里面找不到对应数据库的字段");
                 } else {
                     Method method = dbPojoClass.getDeclaredMethod(methodName, new Class[]{field.getType()});
                     methodMap.put(columnName, method);
@@ -192,7 +192,7 @@ public abstract class AbstractDAO<T> implements ApplicationContextAware {
                     }
                     return object;
                 } catch (Exception e) {
-                    log.error("反射绑定的是后发生错误", e);
+                    log.error("反射绑定的时候发生错误", e);
                     return null;
                 }
             }
