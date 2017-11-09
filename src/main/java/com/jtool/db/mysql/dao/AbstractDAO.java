@@ -184,6 +184,7 @@ public abstract class AbstractDAO<T> implements ApplicationContextAware {
                                 methodMap.get(columnName).invoke(object, rs.getString(j));
                                 break;
                             case "java.sql.Timestamp" :
+                            case "java.util.Date" :
                                 methodMap.get(columnName).invoke(object, rs.getTimestamp(j));
                                 break;
                             default:

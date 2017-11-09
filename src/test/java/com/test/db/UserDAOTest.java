@@ -364,5 +364,21 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		users.setId(id);
 		return users;
 	}
+
+	@Test
+	public void testUserWithBirthday() {
+		Date now = new Date();
+		Users users = new Users();
+		users.setName("jiale");
+		users.setAge(32);
+		users.setBirthday(now);
+
+		long id = userDAO.addAndReturnPrimaryKey(users);
+		users.setId(id);
+
+		Optional<Users> usersOptional = userDAO.selectByPrimaryKeyOpt(users.getId());
+		Assert.assertTrue(usersOptional.isPresent());
+		Assert.assertEquals(users, usersOptional.get());
+	}
 	
 }
