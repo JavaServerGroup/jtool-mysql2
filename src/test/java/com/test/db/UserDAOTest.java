@@ -8,8 +8,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.*;
 
 @ContextConfiguration(locations = "/testDB-config.xml")
@@ -43,6 +41,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 		Assert.assertTrue(userFromDB.isPresent());
 		Assert.assertEquals(users, userFromDB.get());
+
 	}
 
 	@Test
