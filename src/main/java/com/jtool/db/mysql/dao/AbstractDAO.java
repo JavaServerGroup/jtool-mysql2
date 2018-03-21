@@ -16,12 +16,9 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Date;
+import java.util.*;
 
 public abstract class AbstractDAO<T> implements ApplicationContextAware {
 
@@ -55,6 +52,16 @@ public abstract class AbstractDAO<T> implements ApplicationContextAware {
 
         initReflectionDbPojoClass();
         initReflectionBinding();
+
+        checkPojoClass(dbPojoClass);
+    }
+
+    private void checkPojoClass(Class<T> dbPojoClass) {
+        for(Field field : dbPojoClass.getDeclaredFields()) {
+            if (field.getType().isPrimitive()) {
+                throw new IllegalStateException(dbPojoClass.getName() + "不应该使用简单类型: " + field.getName());
+            }
+        }
     }
 
     private void initTableAnnotation() {
@@ -63,39 +70,39 @@ public abstract class AbstractDAO<T> implements ApplicationContextAware {
     }
 
     private void initReflectionDbPojoClass() throws ClassNotFoundException {
-        Type[] parameterizedTypes = ReflectionUtil.getParameterizedTypes(this);
-        dbPojoClass = (Class<T>)ReflectionUtil.getClass(parameterizedTypes[0]);
+        dbPojoClass = (Class<T>)ReflectionUtil.getClass(ReflectionUtil.getParameterizedTypes(this)[0]);
     }
 
     private void initReflectionBinding() throws SQLException, NoSuchFieldException, NoSuchMethodException {
 
-        final Connection connection = jdbcTemplate.getDataSource().getConnection();
-        final DatabaseMetaData dmd = connection.getMetaData();
+        try(final Connection connection = jdbcTemplate.getDataSource().getConnection()) {
+            final DatabaseMetaData dmd = connection.getMetaData();
 
-        final String catalog = connection.getCatalog(); //catalog 其实也就是数据库名
+            final String catalog = connection.getCatalog(); //catalog 其实也就是数据库名
 
-        final ResultSet tablesResultSet = dmd.getTables(catalog, null, tableName, new String[]{"TABLE"});
+            final ResultSet tablesResultSet = dmd.getTables(catalog, null, tableName, new String[]{"TABLE"});
 
-        if (tablesResultSet.next()) {
+            if (tablesResultSet.next()) {
 
-            final ResultSet crs = dmd.getColumns(catalog, "%", tableName, "%");
+                final ResultSet crs = dmd.getColumns(catalog, "%", tableName, "%");
 
-            while (crs.next()) {
-                final String columnName = crs.getString("COLUMN_NAME");
-                final String methodName = "set" + columnName.substring(0, 1).toUpperCase() + columnName.substring(1);
+                while (crs.next()) {
+                    final String columnName = crs.getString("COLUMN_NAME");
+                    final String methodName = "set" + columnName.substring(0, 1).toUpperCase() + columnName.substring(1);
 
-                final Field field = dbPojoClass.getDeclaredField(columnName);
+                    final Field field = dbPojoClass.getDeclaredField(columnName);
 
-                if (field == null) {
-                    throw new IllegalStateException("pojo里面找不到对应数据库的字段");
-                } else {
-                    Method method = dbPojoClass.getDeclaredMethod(methodName, new Class[]{field.getType()});
-                    methodMap.put(columnName, method);
-                    fieldMap.put(columnName, field);
+                    if (field == null) {
+                        throw new IllegalStateException("pojo里面找不到对应数据库的字段");
+                    } else {
+                        Method method = dbPojoClass.getDeclaredMethod(methodName, new Class[]{field.getType()});
+                        methodMap.put(columnName, method);
+                        fieldMap.put(columnName, field);
+                    }
                 }
+            } else {
+                throw new IllegalStateException();
             }
-        } else {
-            throw new IllegalStateException();
         }
     }
 
@@ -149,43 +156,60 @@ public abstract class AbstractDAO<T> implements ApplicationContextAware {
 
                         switch (fieldMap.get(columnName).getGenericType().getTypeName()) {
                             case "byte" :
-                                methodMap.get(columnName).invoke(object, rs.getByte(j));
-                                break;
                             case "short" :
-                                methodMap.get(columnName).invoke(object, rs.getShort(j));
-                                break;
                             case "int" :
-                                methodMap.get(columnName).invoke(object, rs.getInt(j));
-                                break;
                             case "long" :
-                                methodMap.get(columnName).invoke(object, rs.getLong(j));
-                                break;
+                            case "float" :
+                            case "double" :
+                                throw new IllegalStateException(dbPojoClass.getName() + "不应该使用简单类型: " + columnName);
                             case "java.lang.Byte" :
+                                byte b = rs.getByte(j);
                                 if(!rs.wasNull()) {
-                                    methodMap.get(columnName).invoke(object, rs.getByte(j));
+                                    methodMap.get(columnName).invoke(object, b);
                                 }
                                 break;
                             case "java.lang.Short" :
+                                short s = rs.getShort(j);
                                 if(!rs.wasNull()) {
-                                    methodMap.get(columnName).invoke(object, rs.getShort(j));
+                                    methodMap.get(columnName).invoke(object, s);
                                 }
                                 break;
                             case "java.lang.Integer" :
+                                int anInt = rs.getInt(j);
                                 if(!rs.wasNull()) {
-                                    methodMap.get(columnName).invoke(object, rs.getInt(j));
+                                    methodMap.get(columnName).invoke(object, anInt);
                                 }
                                 break;
                             case "java.lang.Long" :
+                                long l = rs.getLong(j);
                                 if(!rs.wasNull()) {
-                                    methodMap.get(columnName).invoke(object, rs.getLong(j));
+                                    methodMap.get(columnName).invoke(object, l);
+                                }
+                                break;
+                            case "java.lang.Float" :
+                                float f = rs.getFloat(j);
+                                if(!rs.wasNull()) {
+                                    methodMap.get(columnName).invoke(object, f);
+                                }
+                                break;
+                            case "java.lang.Double" :
+                                double d = rs.getDouble(j);
+                                if (!rs.wasNull()) {
+                                    methodMap.get(columnName).invoke(object, d);
                                 }
                                 break;
                             case "java.lang.String" :
-                                methodMap.get(columnName).invoke(object, rs.getString(j));
+                                String str = rs.getString(j);
+                                if(!rs.wasNull()) {
+                                    methodMap.get(columnName).invoke(object, str);
+                                }
                                 break;
                             case "java.sql.Timestamp" :
                             case "java.util.Date" :
-                                methodMap.get(columnName).invoke(object, rs.getTimestamp(j));
+                                Timestamp t = rs.getTimestamp(j);
+                                if(!rs.wasNull()) {
+                                    methodMap.get(columnName).invoke(object, new Date(t.getTime()));
+                                }
                                 break;
                             default:
                                 throw new IllegalStateException();
@@ -238,6 +262,7 @@ public abstract class AbstractDAO<T> implements ApplicationContextAware {
 
     public Optional<T> execSelectSqlAsPojoOpt(String sql, Object... args) {
         try {
+            log.debug("准备查找数据：{} \t {}", sql, args);
             T t = jdbcTemplate.queryForObject(sql, makeRowMapperInstance(), args);
             log.debug("查找到记录：{}", t);
             return Optional.of(t);

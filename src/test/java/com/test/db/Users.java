@@ -1,40 +1,58 @@
 package com.test.db;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Users {
-	private long id;
+	private Long id;
 	private String name;
-	private int age;
+	private Integer age;
 	private Date birthday;
+	private Double height;
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public Users setId(Long id) {
 		this.id = id;
+		return this;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Users setName(String name) {
+		this.name = name;
+		return this;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public Users setAge(Integer age) {
+		this.age = age;
+		return this;
 	}
 
 	public Date getBirthday() {
 		return birthday;
 	}
 
-	public void setBirthday(Date birthday) {
+	public Users setBirthday(Date birthday) {
 		this.birthday = birthday;
+		return this;
 	}
 
-	public String getName() {
-		return name;
+	public Double getHeight() {
+		return height;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public int getAge() {
-		return age;
-	}
-	public void setAge(int age) {
-		this.age = age;
+
+	public Users setHeight(Double height) {
+		this.height = height;
+		return this;
 	}
 
 	@Override
@@ -44,6 +62,7 @@ public class Users {
 				", name='" + name + '\'' +
 				", age=" + age +
 				", birthday=" + birthday +
+				", height=" + height +
 				'}';
 	}
 
@@ -51,17 +70,15 @@ public class Users {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-
 		Users users = (Users) o;
-
-		if (age != users.age) return false;
-		return name != null ? name.equals(users.name) : users.name == null;
+		return age == users.age &&
+				Objects.equals(name, users.name) &&
+				Objects.equals(birthday, users.birthday) &&
+				Objects.equals(height, users.height);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = name != null ? name.hashCode() : 0;
-		result = 31 * result + age;
-		return result;
+		return Objects.hash(name, age, birthday, height);
 	}
 }

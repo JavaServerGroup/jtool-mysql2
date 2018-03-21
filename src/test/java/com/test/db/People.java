@@ -1,23 +1,25 @@
 package com.test.db;
 
 public class People {
-    private long id;
+    private Long id;
     private String name;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public People setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public People setName(String name) {
         this.name = name;
+        return this;
     }
 
     @Override

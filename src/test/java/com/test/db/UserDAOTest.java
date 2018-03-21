@@ -13,11 +13,15 @@ import java.util.*;
 @ContextConfiguration(locations = "/testDB-config.xml")
 public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 
+	@Resource
+	private UserDAO userDAO;
+
 	@Before
 	public void before() {
 		userDAO.add(new Users(){{
 			setName("jialechan");
 			setAge(8);
+			setHeight(1.73);
 		}});
 		userDAO.add(new Users(){{
 			setName("KKL");
@@ -29,13 +33,10 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		}});
 	}
 
-	@Resource
-	private UserDAO userDAO;
-
 	@Test
 	public void testIfWhere() {
 
-		Users users = genUserPojo(1, "jialechan", 8);
+		Users users = genUserPojo(1l, "jialechan", 8, 1.73);
 
 		Optional<Users> userFromDB = userDAO.select().ifWhere(users.getName() != null, "name = ?", () -> "jialechan").execAsPojoOpt();
 
@@ -46,9 +47,9 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 	@Test
 	public void testIfWhere2() {
-		Users users = genUserPojo(1, "jialechan", 8);
+		Users users = genUserPojo(1l, "KKL", 18);
 
-		Optional<Users> userFromDB = userDAO.select().where("name = ?", "jialechan").ifWhere(users.getAge() != 0, "age = ?", () -> 8).execAsPojoOpt();
+		Optional<Users> userFromDB = userDAO.select().where("name = ?", "KKL").ifWhere(users.getAge() != 0, "age = ?", () -> 18).execAsPojoOpt();
 
 		Assert.assertTrue(userFromDB.isPresent());
 		Assert.assertEquals(users, userFromDB.get());
@@ -57,7 +58,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testIfWhere3() {
 
-		Users users = genUserPojo(1, null, 8);
+		Users users = genUserPojo(1l, null, 8);
 
 		List<Users> usersList = userDAO.select().ifWhere(users.getName() != null, "name = ?", () -> users.getName().toLowerCase()).execAsList();
 
@@ -68,9 +69,9 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testSelectAll() {
 		List<Users> userses = new ArrayList<>();
-		userses.add(genUserPojo(1, "jialechan", 8));
-		userses.add(genUserPojo(2, "KKL", 18));
-		userses.add(genUserPojo(3, "Ken", 28));
+		userses.add(genUserPojo(1l, "jialechan", 8, 1.73));
+		userses.add(genUserPojo(2l, "KKL", 18));
+		userses.add(genUserPojo(3l, "Ken", 28));
 		
 		List<Users> result = userDAO.select().execAsList();
 
@@ -80,9 +81,9 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testSelectAllByFields() {
 		List<Users> userses = new ArrayList<>();
-		userses.add(genUserPojo(1, "jialechan", 8));
-		userses.add(genUserPojo(2, "KKL", 18));
-		userses.add(genUserPojo(3, "Ken", 28));
+		userses.add(genUserPojo(1l, "jialechan", 8));
+		userses.add(genUserPojo(2l, "KKL", 18));
+		userses.add(genUserPojo(3l, "Ken", 28));
 
 		List<Users> result = userDAO.select("id, name, age").execAsList();
 
@@ -131,7 +132,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectFilterBy() {
-		Users users = genUserPojo(1, "jialechan", 8);
+		Users users = genUserPojo(1l, "jialechan", 8, 1.73);
 		
 		Optional<Users> userFromDB = userDAO.select().where("name = ?", "jialechan").execAsPojoOpt();
 		
@@ -152,8 +153,8 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testSelectFilterByAsList() {
 		List<Users> userses = new ArrayList<>();
-		userses.add(genUserPojo(1, "jialechan", 8));
-		userses.add(genUserPojo(2, "KKL", 18));
+		userses.add(genUserPojo(1l, "jialechan", 8, 1.73));
+		userses.add(genUserPojo(2l, "KKL", 18));
 		
 		List<Users> usersFromDB = userDAO.select().where("age < ?", 20).execAsList();
 		
@@ -178,7 +179,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 		Assert.assertEquals(2, usersFromDB.size());
 		Assert.assertEquals("KKL", usersFromDB.get(1).getName());
-		Assert.assertEquals(18, usersFromDB.get(1).getAge());
+		Assert.assertEquals(18, usersFromDB.get(1).getAge().longValue());
 	}
 	
 	@Test
@@ -207,7 +208,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectFilterByStartAndLimitOrderByAsList() {
-		Users users = genUserPojo(2, "KKL", 18);
+		Users users = genUserPojo(2l, "KKL", 18);
 		
 		List<Users> usersFromDB = userDAO.select().where("age < ?", 20).orderByDesc("id").limit(0, 1).execAsList();
 		
@@ -270,7 +271,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testExecSelectSqlAsObject() {
-		Users users = genUserPojo(1, "jialechan", 8);
+		Users users = genUserPojo(1l, "jialechan", 8, 1.73);
 		
 		String sql = "select * from " + userDAO.getTableName() + " where name = ?";
 		
@@ -283,8 +284,8 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testExecSqlAsObjectList() {
 		List<Users> userses = new ArrayList<>();
-		userses.add(genUserPojo(1, "jialechan", 8));
-		userses.add(genUserPojo(2, "KKL", 18));
+		userses.add(genUserPojo(1l, "jialechan", 8, 1.73));
+		userses.add(genUserPojo(2l, "KKL", 18));
 		
 		String sql = "select * from " + userDAO.getTableName() + " where age < ?";
 		
@@ -356,11 +357,23 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		userDAO.select().limit(0, -1);
 	}
 
-	private Users genUserPojo(int id, String name, int age) {
+	private Users genUserPojo(Long id, String name, Integer age) {
 		Users users = new Users();
 		users.setAge(age);
 		users.setName(name);
 		users.setId(id);
+
+		return users;
+	}
+
+	private Users genUserPojo(Long id, String name, Integer age, Double height) {
+		Users users = new Users();
+		users.setAge(age);
+		users.setName(name);
+		users.setId(id);
+
+		users.setHeight(height);
+
 		return users;
 	}
 
@@ -370,7 +383,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		Users users = new Users();
 		users.setName("jiale");
 		users.setAge(32);
-		users.setBirthday(now);
+		users.setBirthday(getSecondTimestamp(now));
 
 		long id = userDAO.addAndReturnPrimaryKey(users);
 		users.setId(id);
@@ -379,5 +392,11 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		Assert.assertTrue(usersOptional.isPresent());
 		Assert.assertEquals(users, usersOptional.get());
 	}
-	
+
+	public static Date getSecondTimestamp(Date date){
+		String timestamp = String.valueOf(date.getTime()/1000);
+		return new Date(Long.valueOf(timestamp + "000"));
+	}
+
+
 }
