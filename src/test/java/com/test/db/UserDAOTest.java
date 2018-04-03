@@ -36,7 +36,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testIfWhere() {
 
-		Users users = genUserPojo(1l, "jialechan", 8, 1.73);
+		Users users = genUserPojo(1L, "jialechan", 8, 1.73);
 
 		Optional<Users> userFromDB = userDAO.select().ifWhere(users.getName() != null, "name = ?", () -> "jialechan").execAsPojoOpt();
 
@@ -47,7 +47,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 	@Test
 	public void testIfWhere2() {
-		Users users = genUserPojo(1l, "KKL", 18);
+		Users users = genUserPojo(1L, "KKL", 18);
 
 		Optional<Users> userFromDB = userDAO.select().where("name = ?", "KKL").ifWhere(users.getAge() != 0, "age = ?", () -> 18).execAsPojoOpt();
 
@@ -58,7 +58,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testIfWhere3() {
 
-		Users users = genUserPojo(1l, null, 8);
+		Users users = genUserPojo(1L, null, 8);
 
 		List<Users> usersList = userDAO.select().ifWhere(users.getName() != null, "name = ?", () -> users.getName().toLowerCase()).execAsList();
 
@@ -69,9 +69,9 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testSelectAll() {
 		List<Users> userses = new ArrayList<>();
-		userses.add(genUserPojo(1l, "jialechan", 8, 1.73));
-		userses.add(genUserPojo(2l, "KKL", 18));
-		userses.add(genUserPojo(3l, "Ken", 28));
+		userses.add(genUserPojo(1L, "jialechan", 8, 1.73));
+		userses.add(genUserPojo(2L, "KKL", 18));
+		userses.add(genUserPojo(3L, "Ken", 28));
 		
 		List<Users> result = userDAO.select().execAsList();
 
@@ -81,9 +81,9 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testSelectAllByFields() {
 		List<Users> userses = new ArrayList<>();
-		userses.add(genUserPojo(1l, "jialechan", 8));
-		userses.add(genUserPojo(2l, "KKL", 18));
-		userses.add(genUserPojo(3l, "Ken", 28));
+		userses.add(genUserPojo(1L, "jialechan", 8));
+		userses.add(genUserPojo(2L, "KKL", 18));
+		userses.add(genUserPojo(3L, "Ken", 28));
 
 		List<Users> result = userDAO.select("id, name, age").execAsList();
 
@@ -132,7 +132,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectFilterBy() {
-		Users users = genUserPojo(1l, "jialechan", 8, 1.73);
+		Users users = genUserPojo(1L, "jialechan", 8, 1.73);
 		
 		Optional<Users> userFromDB = userDAO.select().where("name = ?", "jialechan").execAsPojoOpt();
 		
@@ -153,8 +153,8 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testSelectFilterByAsList() {
 		List<Users> userses = new ArrayList<>();
-		userses.add(genUserPojo(1l, "jialechan", 8, 1.73));
-		userses.add(genUserPojo(2l, "KKL", 18));
+		userses.add(genUserPojo(1L, "jialechan", 8, 1.73));
+		userses.add(genUserPojo(2L, "KKL", 18));
 		
 		List<Users> usersFromDB = userDAO.select().where("age < ?", 20).execAsList();
 		
@@ -208,7 +208,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testSelectFilterByStartAndLimitOrderByAsList() {
-		Users users = genUserPojo(2l, "KKL", 18);
+		Users users = genUserPojo(2L, "KKL", 18);
 		
 		List<Users> usersFromDB = userDAO.select().where("age < ?", 20).orderByDesc("id").limit(0, 1).execAsList();
 		
@@ -271,7 +271,7 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testExecSelectSqlAsObject() {
-		Users users = genUserPojo(1l, "jialechan", 8, 1.73);
+		Users users = genUserPojo(1L, "jialechan", 8, 1.73);
 		
 		String sql = "select * from " + userDAO.getTableName() + " where name = ?";
 		
@@ -284,8 +284,8 @@ public class UserDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testExecSqlAsObjectList() {
 		List<Users> userses = new ArrayList<>();
-		userses.add(genUserPojo(1l, "jialechan", 8, 1.73));
-		userses.add(genUserPojo(2l, "KKL", 18));
+		userses.add(genUserPojo(1L, "jialechan", 8, 1.73));
+		userses.add(genUserPojo(2L, "KKL", 18));
 		
 		String sql = "select * from " + userDAO.getTableName() + " where age < ?";
 		

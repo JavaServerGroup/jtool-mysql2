@@ -115,12 +115,12 @@ public abstract class AbstractDAO<T> implements ApplicationContextAware {
         return tableName;
     }
 
-    public Select select() {
-        return new Select("*", this);
+    public Select<T> select() {
+        return new Select<>("*", this);
     }
 
-    public Select select(String fields) {
-        return new Select(fields, this);
+    public Select<T> select(String fields) {
+        return new Select<>(fields, this);
     }
 
     public Optional<T> selectByPrimaryKeyOpt(Object id) {
@@ -218,7 +218,7 @@ public abstract class AbstractDAO<T> implements ApplicationContextAware {
                     return object;
                 } catch (Exception e) {
                     log.error("反射绑定的时候发生错误", e);
-                    return null;
+                    throw new IllegalStateException(e);
                 }
             }
         };

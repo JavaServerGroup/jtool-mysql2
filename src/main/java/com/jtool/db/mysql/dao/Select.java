@@ -2,11 +2,11 @@ package com.jtool.db.mysql.dao;
 
 import java.util.*;
 
-public class Select {
+public class Select<T> {
 
     private final List<Object> args = new ArrayList<>();
 
-    private AbstractDAO abstractDAO;
+    private AbstractDAO<T> abstractDAO;
 
     private String fields;
     private String whereStr;
@@ -16,18 +16,18 @@ public class Select {
 
     private String action = "select";
 
-    Select(String fields, AbstractDAO abstractDAO) {
+    Select(String fields, AbstractDAO<T> abstractDAO) {
         this.fields = fields;
         this.abstractDAO = abstractDAO;
     }
 
-    public Select where(String where, Object... args) {
+    public Select<T> where(String where, Object... args) {
         this.whereStr = where;
         Collections.addAll(this.args, args);
         return this;
     }
 
-    public Select ifWhere(boolean runIfTrue, String where, ParamFunctionalInterface... args) {
+    public Select<T> ifWhere(boolean runIfTrue, String where, ParamFunctionalInterface... args) {
         if(runIfTrue) {
             if(this.whereStr == null) {
                 this.whereStr = where;
@@ -42,7 +42,7 @@ public class Select {
         return this;
     }
 
-    public Select orderByAsc(String orderBy) {
+    public Select<T> orderByAsc(String orderBy) {
         if(this.orderByStr == null) {
             this.orderByStr = orderBy;
         } else {
@@ -51,7 +51,7 @@ public class Select {
         return this;
     }
 
-    public Select orderByDesc(String orderBy) {
+    public Select<T> orderByDesc(String orderBy) {
         if(this.orderByStr == null) {
             this.orderByStr = orderBy + " desc";
         } else {
@@ -60,7 +60,7 @@ public class Select {
         return this;
     }
 
-    public Select limit(int start, int len) {
+    public Select<T> limit(int start, int len) {
         if(len <= 0){
             throw new IllegalArgumentException("limit的长度应该大于0");
         }
@@ -69,27 +69,27 @@ public class Select {
         return this;
     }
 
-    public List execAsList() {
+    public List<T> execAsList() {
         return execAsList(makeSQL());
     }
 
-    public List execAsList(String sql) {
+    public List<T> execAsList(String sql) {
         return abstractDAO.execSelectSqlAsList(sql, args.toArray());
     }
 
-    public List execAsRows() {
+    public List<Map<String, Object>> execAsRows() {
         return execAsRows(makeSQL());
     }
 
-    public List execAsRows(String sql) {
+    public List<Map<String, Object>> execAsRows(String sql) {
         return abstractDAO.execSelectSqlAsRows(sql, args.toArray());
     }
 
-    public Optional execAsPojoOpt() {
+    public Optional<T> execAsPojoOpt() {
         return execAsPojoOpt(makeSQL());
     }
 
-    public Optional execAsPojoOpt(String sql) {
+    public Optional<T> execAsPojoOpt(String sql) {
         return abstractDAO.execSelectSqlAsPojoOpt(sql, args.toArray());
     }
 
